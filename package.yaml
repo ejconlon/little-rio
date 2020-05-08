@@ -5,6 +5,8 @@ license:             BSD3
 author:              "Eric Conlon"
 maintainer:          "ejconlon@gmail.com"
 copyright:           "(c) 2020 Eric Conlon"
+category:            Control
+synopsis:            When you need just the RIO monad
 
 extra-source-files:
 - README.md
