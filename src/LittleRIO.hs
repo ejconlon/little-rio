@@ -10,7 +10,7 @@ See LICENSE info in the README.
 module LittleRIO
   ( HasStateRef (..)
   , HasWriteRef (..)
-  , SomeRef
+  , SomeRef (..)
   , RIO (..)
   , getStateRef
   , liftRIO

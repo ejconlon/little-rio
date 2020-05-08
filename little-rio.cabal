@@ -4,10 +4,10 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 2b2090b27367642626349e26b93496440dae5c6ca1e56579cbbdee0ea5b68200
+-- hash: 164d0fdd886b3210c590587e48d1ccd93c6aa132cf9f4e0ff385825b9c30392b
 
 name:           little-rio
-version:        0.1.0
+version:        0.1.1
 synopsis:       When you need just the RIO monad
 description:    Please see the README on GitHub at <https://github.com/ejconlon/little-rio#readme>
 category:       Control
