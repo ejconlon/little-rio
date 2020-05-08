@@ -1,42 +1,23 @@
 name:                little-rio
 version:             0.1.0
-github:              "githubuser/little-rio"
+github:              "ejconlon/little-rio"
 license:             BSD3
-author:              "Author name here"
-maintainer:          "example@example.com"
-copyright:           "(c) 2020 Author name here"
+author:              "Eric Conlon"
+maintainer:          "ejconlon@gmail.com"
+copyright:           "(c) 2020 Eric Conlon"
 
 extra-source-files:
 - README.md
 
-description: Please see the README on GitHub at <https://github.com/githubuser/little-rio#readme>
+description: Please see the README on GitHub at <https://github.com/ejconlon/little-rio#readme>
 
 dependencies:
 - base >= 4.12 && < 5
-
-default-extensions:
-  - ConstraintKinds
-  - DataKinds
-  - DeriveFunctor
-  - DeriveFoldable
-  - DeriveGeneric
-  - DeriveTraversable
-  - FlexibleContexts
-  - FlexibleInstances
-  - FunctionalDependencies
-  - GADTs
-  - GeneralizedNewtypeDeriving
-  - KindSignatures
-  - LambdaCase
-  - MultiParamTypeClasses
-  - MultiWayIf
-  - NoImplicitPrelude
-  - OverloadedStrings
-  - Rank2Types
-  - TemplateHaskell
-  - TupleSections
-  - TypeApplications
-  - TypeFamilies
+- exceptions >= 0.10
+- microlens >= 0.4
+- microlens-mtl >= 0.2
+- mtl >= 2.2
+- unliftio-core >= 0.1
 
 ghc-options:
 - -Wall
@@ -50,28 +31,3 @@ ghc-options:
 
 library:
   source-dirs: src
-
-executables:
-  little-rio-exe:
-    main:                Main.hs
-    source-dirs:         app
-    ghc-options:
-    - -threaded
-    - -rtsopts
-    - -with-rtsopts=-N
-    dependencies:
-    - little-rio
-
-tests:
-  little-rio-test:
-    main:                Tasty.hs
-    source-dirs:         test
-    ghc-options:
-    - -threaded
-    - -rtsopts
-    - -with-rtsopts=-N
-    dependencies:
-    - little-rio
-    - tasty
-    - tasty-discover
-    - tasty-hunit
