@@ -45,7 +45,7 @@ docs:
 
 .PHONY: deps
 deps:
-	stack build --copy-compiler-tool hlint stylish-haskell ghcid
+	stack build --copy-compiler-tool ghcid hlint hpack stylish-haskell
 
 .PHONY: watch
 watch:
