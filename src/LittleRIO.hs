@@ -1,3 +1,4 @@
+{-# LANGUAGE DeriveTraversable #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
@@ -13,6 +14,9 @@ module LittleRIO
   ( HasResourceMap (..)
   , HasStateRef (..)
   , HasWriteRef (..)
+  , SimpleResourceEnv (..)
+  , SimpleStateEnv (..)
+  , SimpleWriteEnv (..)
   , SomeRef (..)
   , ResourceMap
   , RIO (..)
@@ -25,6 +29,9 @@ module LittleRIO
   , modifyStateRef
   , passWriteRef
   , putStateRef
+  , runSimpleResourceRIO
+  , runSimpleStateRIO
+  , runSimpleWriteRIO
   , runRIO
   , readSomeRef
   , resourceRIO
@@ -45,7 +52,7 @@ import Control.Monad.Trans.Resource (runResourceT)
 import Control.Monad.Trans.Resource.Internal (MonadResource (..), ReleaseMap, ResourceT (..))
 import Control.Monad.Writer (MonadWriter (..))
 import Data.IORef (IORef, newIORef, readIORef, writeIORef)
-import Lens.Micro (Lens')
+import Lens.Micro (Lens', lens)
 import Lens.Micro.Mtl (view)
 import Prelude
 
@@ -70,9 +77,9 @@ mapRIO f m = do
   runRIO env' m
 
 liftRIO :: (MonadIO m, MonadReader env m) => RIO env a -> m a
-liftRIO rio = do
+liftRIO m = do
   env <- ask
-  runRIO env rio
+  runRIO env m
 
 unliftRIO :: MonadIO m => env -> m (UnliftIO (RIO env))
 unliftRIO env = liftIO (runRIO env askUnliftIO)
@@ -103,6 +110,21 @@ class HasStateRef st env | env -> st where
 instance HasStateRef a (SomeRef a) where
   stateRefL = id
 
+data SimpleStateEnv st env = SimpleStateEnv
+  { sseRef :: !(SomeRef st)
+  , sseEnv :: !env
+  } deriving (Functor, Foldable, Traversable)
+
+instance HasStateRef st (SimpleStateEnv st env) where
+  stateRefL = lens sseRef (\(SimpleStateEnv _ env) st -> SimpleStateEnv st env)
+
+runSimpleStateRIO :: MonadIO m => st -> env -> RIO (SimpleStateEnv st env) a -> m (a, st)
+runSimpleStateRIO st env m = do
+  ref <- newSomeRef st
+  a <- runRIO (SimpleStateEnv ref env) m
+  st' <- readSomeRef ref
+  pure (a, st')
+
 getStateRef :: (HasStateRef st env, MonadReader env m, MonadIO m) => m st
 getStateRef = do
   ref <- view stateRefL
@@ -127,6 +149,21 @@ class HasWriteRef w env | env -> w where
 
 instance HasWriteRef a (SomeRef a) where
   writeRefL = id
+
+data SimpleWriteEnv w env = SimpleWriteEnv
+  { sweRef :: !(SomeRef w)
+  , sweEnv :: !env
+  } deriving (Functor, Foldable, Traversable)
+
+instance HasWriteRef w (SimpleWriteEnv w env) where
+  writeRefL = lens sweRef (\(SimpleWriteEnv _ env) w -> SimpleWriteEnv w env)
+
+runSimpleWriteRIO :: (MonadIO m, Monoid w) => env -> RIO (SimpleWriteEnv w env) a -> m (a, w)
+runSimpleWriteRIO env m = do
+  ref <- newSomeRef mempty
+  a <- runRIO (SimpleWriteEnv ref env) m
+  w <- readSomeRef ref
+  pure (a, w)
 
 tellWriteRef :: (HasWriteRef w env, MonadReader env m, MonadIO m, Semigroup w) => w -> m ()
 tellWriteRef value = do
@@ -167,6 +204,17 @@ class HasResourceMap env where
 
 instance HasResourceMap (IORef ReleaseMap) where
   resourceMapL = id
+
+data SimpleResourceEnv env = SimpleResourceEnv
+  { sreMap :: !ResourceMap
+  , sreEnv :: !env
+  } deriving (Functor, Foldable, Traversable)
+
+instance HasResourceMap (SimpleResourceEnv env) where
+  resourceMapL = lens sreMap (\(SimpleResourceEnv _ env) m -> SimpleResourceEnv m env)
+
+runSimpleResourceRIO :: MonadUnliftIO m => env -> RIO (SimpleResourceEnv env) a -> m a
+runSimpleResourceRIO env m = withResourceMap (\rm -> runRIO (SimpleResourceEnv rm env) m)
 
 resourceRIO :: HasResourceMap env => ResourceT IO a -> RIO env a
 resourceRIO (ResourceT f) = view resourceMapL >>= liftIO . f
