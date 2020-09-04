@@ -1,16 +1,20 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE UndecidableInstances #-}
 
 {- |
-Most definitions follow the RIO lib: https://hackage.haskell.org/package/rio-0.1.14.0/docs/RIO.html
+Most definitions follow the RIO lib: https://hackage.haskell.org/package/rio-0.1.18.0/docs/RIO.html
+The rest follow from orphans: https://hackage.haskell.org/package/rio-orphans-0.1.1.0/docs/src/RIO.Orphans.html
 See LICENSE info in the README.
 -}
 module LittleRIO
-  ( HasStateRef (..)
+  ( HasResourceMap (..)
+  , HasStateRef (..)
   , HasWriteRef (..)
   , SomeRef (..)
+  , ResourceMap
   , RIO (..)
   , getStateRef
   , liftRIO
@@ -23,17 +27,22 @@ module LittleRIO
   , putStateRef
   , runRIO
   , readSomeRef
+  , resourceRIO
   , tellWriteRef
   , unliftRIO
+  , withResourceMap
   , writeSomeRef
   ) where
 
 import Control.Applicative (liftA2)
 import Control.Monad.Catch (MonadCatch, MonadMask, MonadThrow)
 import Control.Monad.IO.Class (MonadIO (..))
-import Control.Monad.IO.Unlift (MonadUnliftIO, UnliftIO, askUnliftIO)
+import Control.Monad.IO.Unlift (MonadUnliftIO (..), UnliftIO, askUnliftIO)
+import Control.Monad.Primitive (PrimMonad (..))
 import Control.Monad.Reader (MonadReader (..), ReaderT (..))
 import Control.Monad.State (MonadState (..))
+import Control.Monad.Trans.Resource (runResourceT)
+import Control.Monad.Trans.Resource.Internal (MonadResource (..), ReleaseMap, ResourceT (..))
 import Control.Monad.Writer (MonadWriter (..))
 import Data.IORef (IORef, newIORef, readIORef, writeIORef)
 import Lens.Micro (Lens')
@@ -49,6 +58,10 @@ instance Semigroup a => Semigroup (RIO env a) where
 instance Monoid a => Monoid (RIO env a) where
   mempty = pure mempty
   mappend = (<>)
+
+instance PrimMonad (RIO env) where
+  type PrimState (RIO env) = PrimState IO
+  primitive = RIO . ReaderT . const . primitive
 
 mapRIO :: (env -> env') -> RIO env' a -> RIO env a
 mapRIO f m = do
@@ -76,7 +89,7 @@ writeSomeRef :: MonadIO m => SomeRef a -> a -> m ()
 writeSomeRef (SomeRef _ x) = liftIO . x
 
 modifySomeRef :: MonadIO m => SomeRef a -> (a -> a) -> m ()
-modifySomeRef (SomeRef read' write) f = liftIO (fmap f read' >>= write)
+modifySomeRef (SomeRef read' write) f = liftIO (read' >>= write . f)
 
 ioRefToSomeRef :: IORef a -> SomeRef a
 ioRefToSomeRef ref = SomeRef (readIORef ref) (writeIORef ref)
@@ -142,3 +155,21 @@ instance (Monoid w, HasWriteRef w env) => MonadWriter w (RIO env) where
   tell = tellWriteRef
   listen = listenWriteRef
   pass = passWriteRef
+
+type ResourceMap = IORef ReleaseMap
+
+withResourceMap :: MonadUnliftIO m => (ResourceMap -> m a) -> m a
+withResourceMap inner =
+  withRunInIO (\run -> runResourceT (ResourceT (run . inner)))
+
+class HasResourceMap env where
+  resourceMapL :: Lens' env ResourceMap
+
+instance HasResourceMap (IORef ReleaseMap) where
+  resourceMapL = id
+
+resourceRIO :: HasResourceMap env => ResourceT IO a -> RIO env a
+resourceRIO (ResourceT f) = view resourceMapL >>= liftIO . f
+
+instance HasResourceMap env => MonadResource (RIO env) where
+  liftResourceT = resourceRIO

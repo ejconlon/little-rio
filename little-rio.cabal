@@ -4,10 +4,10 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 164d0fdd886b3210c590587e48d1ccd93c6aa132cf9f4e0ff385825b9c30392b
+-- hash: d22342ec62f05927c43b7ecfdacef567fa519fafdf63e0545b49683ac1a14856
 
 name:           little-rio
-version:        0.1.1
+version:        0.2.0
 synopsis:       When you need just the RIO monad
 description:    Please see the README on GitHub at <https://github.com/ejconlon/little-rio#readme>
 category:       Control
@@ -36,9 +36,11 @@ library
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wpartial-fields -Wredundant-constraints -fno-warn-unused-top-binds
   build-depends:
       base >=4.12 && <5
-    , exceptions >=0.10
-    , microlens >=0.4
-    , microlens-mtl >=0.2
-    , mtl >=2.2
-    , unliftio-core >=0.1
+    , exceptions >=0.10 && <1
+    , microlens >=0.4 && <1
+    , microlens-mtl >=0.2 && <1
+    , mtl >=2.2 && <3
+    , primitive >=0.7.0.1 && <1
+    , resourcet >=1.2.4.2 && <2
+    , unliftio-core >=0.1 && <1
   default-language: Haskell2010
