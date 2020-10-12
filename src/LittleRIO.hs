@@ -1,4 +1,7 @@
+{-# LANGUAGE DeriveAnyClass #-}
+{-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE DeriveTraversable #-}
+{-# LANGUAGE DerivingStrategies #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
@@ -42,6 +45,7 @@ module LittleRIO
   ) where
 
 import Control.Applicative (liftA2)
+import Control.DeepSeq (NFData (..))
 import Control.Monad.Catch (MonadCatch, MonadMask, MonadThrow)
 import Control.Monad.IO.Class (MonadIO (..))
 import Control.Monad.IO.Unlift (MonadUnliftIO (..), UnliftIO, askUnliftIO)
@@ -52,12 +56,13 @@ import Control.Monad.Trans.Resource (runResourceT)
 import Control.Monad.Trans.Resource.Internal (MonadResource (..), ReleaseMap, ResourceT (..))
 import Control.Monad.Writer (MonadWriter (..))
 import Data.IORef (IORef, newIORef, readIORef, writeIORef)
+import GHC.Generics (Generic)
 import Lens.Micro (Lens', lens)
 import Lens.Micro.Mtl (view)
 import Prelude
 
 newtype RIO env a = RIO { unRIO :: ReaderT env IO a }
-  deriving (Functor, Applicative, Monad, MonadReader env, MonadIO, MonadThrow, MonadFail, MonadCatch, MonadMask, MonadUnliftIO)
+  deriving newtype (Functor, Applicative, Monad, MonadReader env, MonadIO, MonadThrow, MonadFail, MonadCatch, MonadMask, MonadUnliftIO)
 
 instance Semigroup a => Semigroup (RIO env a) where
   (<>) = liftA2 (<>)
@@ -89,6 +94,9 @@ runRIO r m = liftIO (runReaderT (unRIO m) r)
 
 data SomeRef a = SomeRef !(IO a) !(a -> IO ())
 
+instance NFData (SomeRef a) where
+  rnf (SomeRef r w) = seq r (seq w ())
+
 readSomeRef :: MonadIO m => SomeRef a -> m a
 readSomeRef (SomeRef x _) = liftIO x
 
@@ -113,7 +121,8 @@ instance HasStateRef a (SomeRef a) where
 data SimpleStateEnv st env = SimpleStateEnv
   { sseRef :: !(SomeRef st)
   , sseEnv :: !env
-  } deriving (Functor, Foldable, Traversable)
+  } deriving stock (Functor, Foldable, Traversable, Generic)
+    deriving anyclass (NFData)
 
 instance HasStateRef st (SimpleStateEnv st env) where
   stateRefL = lens sseRef (\(SimpleStateEnv _ env) st -> SimpleStateEnv st env)
@@ -153,7 +162,8 @@ instance HasWriteRef a (SomeRef a) where
 data SimpleWriteEnv w env = SimpleWriteEnv
   { sweRef :: !(SomeRef w)
   , sweEnv :: !env
-  } deriving (Functor, Foldable, Traversable)
+  } deriving stock (Functor, Foldable, Traversable, Generic)
+    deriving anyclass (NFData)
 
 instance HasWriteRef w (SimpleWriteEnv w env) where
   writeRefL = lens sweRef (\(SimpleWriteEnv _ env) w -> SimpleWriteEnv w env)
@@ -208,7 +218,8 @@ instance HasResourceMap (IORef ReleaseMap) where
 data SimpleResourceEnv env = SimpleResourceEnv
   { sreMap :: !ResourceMap
   , sreEnv :: !env
-  } deriving (Functor, Foldable, Traversable)
+  } deriving stock (Functor, Foldable, Traversable, Generic)
+    deriving anyclass (NFData)
 
 instance HasResourceMap (SimpleResourceEnv env) where
   resourceMapL = lens sreMap (\(SimpleResourceEnv _ env) m -> SimpleResourceEnv m env)
