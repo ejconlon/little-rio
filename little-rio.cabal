@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: b47d3f9259ecdd2bc77a2b882c95303dc136dd3f8d03e0b511da61a84ffe4399
+-- hash: 5ac2b5e5c9651242e6bae46a58a6674da57dbc16daeff53478cb3b2d8b383e0e
 
 name:           little-rio
 version:        0.2.2
@@ -17,6 +17,7 @@ author:         Eric Conlon
 maintainer:     ejconlon@gmail.com
 copyright:      (c) 2020 Eric Conlon
 license:        BSD3
+license-file:   LICENSE
 build-type:     Simple
 extra-source-files:
     README.md
