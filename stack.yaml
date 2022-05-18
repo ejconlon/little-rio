@@ -2,3 +2,7 @@ resolver: lts-19.7
 
 packages:
 - .
+
+extra-deps:
+- git: git@github.com:ejconlon/little-logger.git
+  commit: 810e9b2b31a792163705d409b58035f32bb96d20

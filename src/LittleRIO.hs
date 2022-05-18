@@ -1,11 +1,4 @@
 {-# LANGUAGE DeriveAnyClass #-}
-{-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE DeriveTraversable #-}
-{-# LANGUAGE DerivingStrategies #-}
-{-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE FunctionalDependencies #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
-{-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE UndecidableInstances #-}
 
 {- |
@@ -59,10 +52,11 @@ import Data.IORef (IORef, newIORef, readIORef, writeIORef)
 import GHC.Generics (Generic)
 import Lens.Micro (Lens', lens)
 import Lens.Micro.Mtl (view)
-import Prelude
+import LittleLogger (MonadLogger, LogActionWrapperM (..))
 
 newtype RIO env a = RIO { unRIO :: ReaderT env IO a }
   deriving newtype (Functor, Applicative, Monad, MonadReader env, MonadIO, MonadThrow, MonadFail, MonadCatch, MonadMask, MonadUnliftIO)
+  deriving MonadLogger via LogActionWrapperM env (RIO env)
 
 instance Semigroup a => Semigroup (RIO env a) where
   (<>) = liftA2 (<>)

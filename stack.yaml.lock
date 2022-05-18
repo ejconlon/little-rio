@@ -3,7 +3,18 @@
 # For more information, please see the documentation at:
 #   https://docs.haskellstack.org/en/stable/lock_files
 
-packages: []
+packages:
+- completed:
+    name: little-logger
+    version: 1.0.0
+    git: git@github.com:ejconlon/little-logger.git
+    pantry-tree:
+      size: 896
+      sha256: 4e1602d5ed9fb2acef5f61c8ba817814e8015b4a6be98b01c54a05ee07d589c1
+    commit: 810e9b2b31a792163705d409b58035f32bb96d20
+  original:
+    git: git@github.com:ejconlon/little-logger.git
+    commit: 810e9b2b31a792163705d409b58035f32bb96d20
 snapshots:
 - completed:
     size: 618884
