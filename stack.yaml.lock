@@ -5,16 +5,12 @@
 
 packages:
 - completed:
-    name: little-logger
-    version: 1.0.0
-    git: git@github.com:ejconlon/little-logger.git
+    hackage: little-logger-1.0.0@sha256:3548467a252ee21295f7f098597c21d51b1bf184a79e625f13f461501142c0e7,2213
     pantry-tree:
-      size: 896
-      sha256: 4e1602d5ed9fb2acef5f61c8ba817814e8015b4a6be98b01c54a05ee07d589c1
-    commit: 810e9b2b31a792163705d409b58035f32bb96d20
+      size: 318
+      sha256: 0b12ecb9704521a891d597fff46cc48e66d78ca2ccfd0c15e522fba578748849
   original:
-    git: git@github.com:ejconlon/little-logger.git
-    commit: 810e9b2b31a792163705d409b58035f32bb96d20
+    hackage: little-logger-1.0.0
 snapshots:
 - completed:
     size: 618884

@@ -52,7 +52,7 @@ import Data.IORef (IORef, newIORef, readIORef, writeIORef)
 import GHC.Generics (Generic)
 import Lens.Micro (Lens', lens)
 import Lens.Micro.Mtl (view)
-import LittleLogger (MonadLogger, LogActionWrapperM (..))
+import LittleLogger (LogActionWrapperM (..), MonadLogger)
 
 newtype RIO env a = RIO { unRIO :: ReaderT env IO a }
   deriving newtype (Functor, Applicative, Monad, MonadReader env, MonadIO, MonadThrow, MonadFail, MonadCatch, MonadMask, MonadUnliftIO)
