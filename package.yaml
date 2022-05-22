@@ -1,5 +1,5 @@
 name:                little-rio
-version:             1.0.0
+version:             1.0.1
 github:              "ejconlon/little-rio"
 license:             BSD3
 author:              "Eric Conlon"
@@ -23,7 +23,7 @@ dependencies:
 - primitive >= 0.7.0.1 && < 1
 - resourcet >= 1.2.4.2 && < 2
 - unliftio-core >= 0.1 && < 1
-- little-logger >= 1.0 && < 1.1
+- little-logger >= 1.0.1 && < 1.1
 
 default-extensions:
 - DeriveGeneric
