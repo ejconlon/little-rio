@@ -1,5 +1,5 @@
 name:                little-rio
-version:             1.0.1
+version:             2.0.0
 github:              "ejconlon/little-rio"
 license:             BSD3
 author:              "Eric Conlon"
@@ -15,15 +15,13 @@ description: Please see the README on GitHub at <https://github.com/ejconlon/lit
 
 dependencies:
 - base >= 4.12 && < 5
-- deepseq >= 1.4.4.0 && < 2
 - exceptions >= 0.10 && < 1
+- little-logger >= 1.0.1 && < 1.1
 - microlens >= 0.4 && < 1
-- microlens-mtl >= 0.2 && < 1
 - mtl >= 2.2 && < 3
 - primitive >= 0.7.0.1 && < 1
 - resourcet >= 1.2.4.2 && < 2
 - unliftio-core >= 0.1 && < 1
-- little-logger >= 1.0.1 && < 1.1
 
 default-extensions:
 - DeriveGeneric
