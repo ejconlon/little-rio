@@ -7,13 +7,13 @@ packages:
 - completed:
     hackage: little-logger-1.0.1@sha256:3c2bc7a993a74d0ee4afb86ddbe6b246443392384bbd99ee3a7a030cc6d60060,2219
     pantry-tree:
-      size: 318
       sha256: 825572cf5c1660f00b2ac1ad35b59534c9d44945d0929dc417c4ee57074db052
+      size: 318
   original:
     hackage: little-logger-1.0.1
 snapshots:
 - completed:
-    size: 619161
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/19/17.yaml
-    sha256: 7f47507fd037228a8d23cf830f5844e1f006221acebdd7cb49f2f5fb561e0546
-  original: lts-19.17
+    sha256: 126fa33ceb11f5e85ceb4e86d434756bd9a8439e2e5776d306a15fbc63b01e89
+    size: 650041
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/20/20.yaml
+  original: lts-20.20
