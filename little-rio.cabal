@@ -1,13 +1,13 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.35.1.
+-- This file has been generated from package.yaml by hpack version 0.37.0.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 5a57c092ba5bccf9876a634d97b3f2048b4ba5261a47f906c61090dd84c6e66c
+-- hash: 2c34a0cd81d30bbaa6fe452cd9718b33a590ce2ffd05268cfab6f60d7989b54a
 
 name:           little-rio
-version:        2.0.0
+version:        3.0.0
 synopsis:       When you need just the RIO monad
 description:    Please see the README on GitHub at <https://github.com/ejconlon/little-rio#readme>
 category:       Control
@@ -46,9 +46,9 @@ library
   build-depends:
       base >=4.12 && <5
     , exceptions >=0.10 && <1
-    , little-logger >=1.0.1 && <1.1
-    , microlens >=0.4 && <1
+    , little-logger >=3.0 && <4
     , mtl >=2.2 && <3
+    , optics >=0.4 && <1
     , primitive >=0.7.0.1 && <1
     , resourcet >=1.2.4.2 && <2
     , unliftio-core >=0.1 && <1

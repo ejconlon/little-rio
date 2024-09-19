@@ -33,9 +33,8 @@ import Control.Monad.Trans.Resource (InternalState, MonadResource (..), Resource
 import Control.Monad.Trans.Resource.Internal (unResourceT)
 import Control.Monad.Writer (MonadWriter (..))
 import Data.IORef (IORef, newIORef, readIORef, writeIORef)
-import Lens.Micro (Lens')
-import Lens.Micro.Extras (view)
 import LittleLogger (LogActionWrapperM (..), MonadLogger)
+import Optics (Lens', equality', view)
 
 newtype RIO env a = RIO {unRIO :: ReaderT env IO a}
   deriving newtype
@@ -52,10 +51,10 @@ newtype RIO env a = RIO {unRIO :: ReaderT env IO a}
     )
   deriving (MonadLogger) via LogActionWrapperM env (RIO env)
 
-instance Semigroup a => Semigroup (RIO env a) where
+instance (Semigroup a) => Semigroup (RIO env a) where
   (<>) = liftA2 (<>)
 
-instance Monoid a => Monoid (RIO env a) where
+instance (Monoid a) => Monoid (RIO env a) where
   mempty = pure mempty
   mappend = (<>)
 
@@ -74,34 +73,34 @@ liftRIO m = do
   env <- ask
   runRIO env m
 
-unliftRIO :: MonadIO m => env -> m (UnliftIO (RIO env))
+unliftRIO :: (MonadIO m) => env -> m (UnliftIO (RIO env))
 unliftRIO env = liftIO (runRIO env askUnliftIO)
 
-runRIO :: MonadIO m => env -> RIO env a -> m a
+runRIO :: (MonadIO m) => env -> RIO env a -> m a
 runRIO r m = liftIO (runReaderT (unRIO m) r)
 
 data SomeRef a = SomeRef !(IO a) !(a -> IO ())
 
-readSomeRef :: MonadIO m => SomeRef a -> m a
+readSomeRef :: (MonadIO m) => SomeRef a -> m a
 readSomeRef (SomeRef x _) = liftIO x
 
-writeSomeRef :: MonadIO m => SomeRef a -> a -> m ()
+writeSomeRef :: (MonadIO m) => SomeRef a -> a -> m ()
 writeSomeRef (SomeRef _ x) = liftIO . x
 
-modifySomeRef :: MonadIO m => SomeRef a -> (a -> a) -> m ()
+modifySomeRef :: (MonadIO m) => SomeRef a -> (a -> a) -> m ()
 modifySomeRef (SomeRef read' write) f = liftIO (read' >>= write . f)
 
 ioRefToSomeRef :: IORef a -> SomeRef a
 ioRefToSomeRef ref = SomeRef (readIORef ref) (writeIORef ref)
 
-newSomeRef :: MonadIO m => a -> m (SomeRef a)
+newSomeRef :: (MonadIO m) => a -> m (SomeRef a)
 newSomeRef = liftIO . fmap ioRefToSomeRef . newIORef
 
 class HasStateRef st env | env -> st where
   stateRefL :: Lens' env (SomeRef st)
 
 instance HasStateRef a (SomeRef a) where
-  stateRefL = id
+  stateRefL = equality'
 
 getStateRef :: (HasStateRef st env, MonadReader env m, MonadIO m) => m st
 getStateRef = do
@@ -118,7 +117,7 @@ modifyStateRef f = do
   ref <- asks (view stateRefL)
   liftIO (modifySomeRef ref f)
 
-instance HasStateRef st env => MonadState st (RIO env) where
+instance (HasStateRef st env) => MonadState st (RIO env) where
   get = getStateRef
   put = putStateRef
 
@@ -126,7 +125,7 @@ class HasWriteRef w env | env -> w where
   writeRefL :: Lens' env (SomeRef w)
 
 instance HasWriteRef a (SomeRef a) where
-  writeRefL = id
+  writeRefL = equality'
 
 tellWriteRef :: (HasWriteRef w env, MonadReader env m, MonadIO m, Semigroup w) => w -> m ()
 tellWriteRef value = do
@@ -158,17 +157,17 @@ instance (Monoid w, HasWriteRef w env) => MonadWriter w (RIO env) where
 
 type ResourceMap = InternalState
 
-withResourceMap :: MonadUnliftIO m => (ResourceMap -> m a) -> m a
+withResourceMap :: (MonadUnliftIO m) => (ResourceMap -> m a) -> m a
 withResourceMap inner = runResourceT (withInternalState inner)
 
 class HasResourceMap env where
   resourceMapL :: Lens' env ResourceMap
 
 instance HasResourceMap ResourceMap where
-  resourceMapL = id
+  resourceMapL = equality'
 
-resourceRIO :: HasResourceMap env => ResourceT IO a -> RIO env a
+resourceRIO :: (HasResourceMap env) => ResourceT IO a -> RIO env a
 resourceRIO m = asks (view resourceMapL) >>= liftIO . unResourceT m
 
-instance HasResourceMap env => MonadResource (RIO env) where
+instance (HasResourceMap env) => MonadResource (RIO env) where
   liftResourceT = resourceRIO

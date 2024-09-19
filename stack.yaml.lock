@@ -5,12 +5,12 @@
 
 packages:
 - completed:
-    hackage: little-logger-1.0.2@sha256:2d6d58195bffc687a4ced58aff4773acc2929147fa6ace54821ed6eb1c0331fc,2223
+    hackage: little-logger-3.0.0@sha256:1e131c44acce0e7997fb5e62a5d6a71e7ae54c7fd80c0641c6a0aa55cf950c90,2217
     pantry-tree:
-      sha256: 04234f2351a37f0931885c1b7771370024c3b148f18f9efd4876f0cf2a110dc5
+      sha256: 5d79775950fa2959746e08a36202393514e5e6920878be60e2aa7706b4dfabd7
       size: 272
   original:
-    hackage: little-logger-1.0.2
+    hackage: little-logger-3.0.0
 snapshots:
 - completed:
     sha256: edbd50d7e7c85c13ad5f5835ae2db92fab1e9cf05ecf85340e2622ec0a303df1
