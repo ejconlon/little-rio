@@ -1,4 +1,4 @@
-resolver: lts-20.20
+resolver: lts-22.34
 
 ghc-options:
   "$everything": -haddock
@@ -7,4 +7,4 @@ packages:
 - .
 
 extra-deps:
-- little-logger-1.0.1
+- little-logger-1.0.2
