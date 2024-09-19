@@ -23,7 +23,6 @@ module LittleRIO
   )
 where
 
-import Control.Applicative (liftA2)
 import Control.Monad.Catch (MonadCatch, MonadMask, MonadThrow)
 import Control.Monad.IO.Class (MonadIO (..))
 import Control.Monad.IO.Unlift (MonadUnliftIO (..), UnliftIO, askUnliftIO)
@@ -161,8 +160,6 @@ type ResourceMap = InternalState
 
 withResourceMap :: MonadUnliftIO m => (ResourceMap -> m a) -> m a
 withResourceMap inner = runResourceT (withInternalState inner)
-
--- withRunInIO (\run -> runResourceT (ResourceT (run . inner)))
 
 class HasResourceMap env where
   resourceMapL :: Lens' env ResourceMap
