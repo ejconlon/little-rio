@@ -5,15 +5,15 @@
 
 packages:
 - completed:
-    hackage: little-logger-3.0.0@sha256:1e131c44acce0e7997fb5e62a5d6a71e7ae54c7fd80c0641c6a0aa55cf950c90,2217
+    hackage: little-logger-3.0.1@sha256:2c02988018d823aaedee7f6bcf2cf249c7c43bf2e2f3db38281a7f9866b0347b,2217
     pantry-tree:
-      sha256: 5d79775950fa2959746e08a36202393514e5e6920878be60e2aa7706b4dfabd7
+      sha256: c0377ec8f705acdb2358a69a82b3cdcc566be3463f61ed60c553fa782be1f673
       size: 272
   original:
-    hackage: little-logger-3.0.0
+    hackage: little-logger-3.0.1
 snapshots:
 - completed:
-    sha256: edbd50d7e7c85c13ad5f5835ae2db92fab1e9cf05ecf85340e2622ec0a303df1
-    size: 720020
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/22/34.yaml
-  original: lts-22.34
+    sha256: 9444fadfa30b67a93080254d53872478c087592ad64443e47c546cdcd13149ae
+    size: 678857
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/23/0.yaml
+  original: lts-23.0
